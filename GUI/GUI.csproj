@@ -9,12 +9,17 @@
         <ApplicationIcon>ozstrips.ico</ApplicationIcon>
         <CefSharpBuildAction>Content</CefSharpBuildAction>
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-        <BaseOutputPath>$(MSBuildProgramFiles32)\vatSys\bin\Plugins\</BaseOutputPath>
-        <OutputPath>$(HOMEPATH)\Documents\vatSys Files\Profiles\Australia\Plugins\OzStrips\</OutputPath>
+        <BaseOutputPath>C:\Users\levis\Documents\vatSys Files\Profiles\Australia\Plugins</BaseOutputPath>
+        <OutputPath>C:\Users\levis\Documents\vatSys Files\Profiles\Australia\Plugins\OzStrips\</OutputPath>
         <PlatformTarget>x86</PlatformTarget>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
         <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+        <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+        <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
     </PropertyGroup>
+    <Target Name="RemoveRuntimeFolders" AfterTargets="Build">
+        <RemoveDir Directories="$(OutputPath)arm64;$(OutputPath)x64;$(OutputPath)x86" />
+    </Target>
     <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net472|AnyCPU'">
       <Optimize>False</Optimize>
     </PropertyGroup>

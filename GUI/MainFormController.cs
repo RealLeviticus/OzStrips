@@ -31,6 +31,7 @@ public class MainFormController : IDisposable
     private BayManager _bayManager;
     private SocketConn _socketConn;
     private string _metar = string.Empty;
+    private string _atisCode = string.Empty;
     private bool _readyForConnection;
     private bool _permitPDCSound = true;
     private Action<object, EventArgs>? _defaultLayout;
@@ -44,6 +45,31 @@ public class MainFormController : IDisposable
     /// Gets a value indicating whether or not a connection can be made to the server.
     /// </summary>
     public static bool ReadyForConnection => Instance?._readyForConnection ?? false;
+
+    /// <summary>
+    /// Gets the bay manager.
+    /// </summary>
+    public BayManager BayManager => _bayManager;
+
+    /// <summary>
+    /// Gets the socket connection.
+    /// </summary>
+    public SocketConn SocketConn => _socketConn;
+
+    /// <summary>
+    /// Gets the current ATIS code.
+    /// </summary>
+    public string AtisCode => _atisCode;
+
+    /// <summary>
+    /// Gets the current METAR string.
+    /// </summary>
+    public string MetarString => _metar;
+
+    /// <summary>
+    /// Gets the current layout/view mode name.
+    /// </summary>
+    public string LayoutName => _layoutName;
 
     /// <summary>
     /// Gets a value indicating whether or not the control key is being held down.
@@ -681,6 +707,7 @@ public class MainFormController : IDisposable
     /// <param name="code">The ATIS code.</param>
     public void SetATISCode(string code)
     {
+        _atisCode = code;
         _mainForm.ATISLabel.Text = code;
     }
 

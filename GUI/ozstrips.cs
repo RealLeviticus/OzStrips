@@ -29,6 +29,7 @@ public sealed class OzStrips : IPlugin, IDisposable, ILabelPlugin
     private readonly CustomToolStripMenuItem _ozStripsOpener;
     private readonly AerodromeManager _aerodromeManager;
     private MainForm? _gui;
+    private WebViewerBridge? _webViewerBridge;
 
     private System.Timers.Timer? _connectionTimer;
     private bool _readyForConnection;
@@ -88,6 +89,8 @@ public sealed class OzStrips : IPlugin, IDisposable, ILabelPlugin
         };
 
         MMI.AddCustomMenuItem(pdcWatcher);
+
+        StartWebViewer();
     }
 
     /// <summary>
@@ -124,6 +127,7 @@ public sealed class OzStrips : IPlugin, IDisposable, ILabelPlugin
     {
         _httpClient.Dispose();
         _gui?.Dispose();
+        _webViewerBridge?.Dispose();
     }
 
     /// <summary>
@@ -373,6 +377,22 @@ public sealed class OzStrips : IPlugin, IDisposable, ILabelPlugin
 
             // Restart vatSys to apply the DPI setting
             RestartVatSys();
+        }
+        catch (Exception ex)
+        {
+            Util.LogError(ex, Name);
+        }
+    }
+
+    private void StartWebViewer()
+    {
+        try
+        {
+            if (_webViewerBridge is null)
+            {
+                _webViewerBridge = new WebViewerBridge(5199);
+                _webViewerBridge.Start();
+            }
         }
         catch (Exception ex)
         {

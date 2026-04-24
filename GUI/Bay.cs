@@ -40,6 +40,7 @@ public class Bay : System.IDisposable
         _socketConnection = socketConn;
         Name = name;
         VerticalBoardNumber = vertBoardNum;
+        LayoutColumn = vertBoardNum;
         ChildPanel = new(bayManager, name, this, containsCDMDisplay, socketConn);
 
         _bayRenderController = new BayRenderController(this);
@@ -53,6 +54,11 @@ public class Bay : System.IDisposable
     /// Gets or sets the vertical board number.
     /// </summary>
     public int VerticalBoardNumber { get; set; }
+
+    /// <summary>
+    /// Gets the layout-defined column index for this bay.
+    /// </summary>
+    public int LayoutColumn { get; }
 
     /// <summary>
     /// Gets the bay child panel.
