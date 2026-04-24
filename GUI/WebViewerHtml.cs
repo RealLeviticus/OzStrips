@@ -188,6 +188,8 @@ var toastState=null;
 var toastTimer=null;
 var tapTimers={};
 var resizeTimer=null;
+var activeScrollCount=0;
+var deferredRender=false;
 
 function connect(){
   var proto=location.protocol==='https:'?'wss:':'ws:';
@@ -198,7 +200,7 @@ function connect(){
     try{
       state=JSON.parse(e.data);
       if(selectedCS&&!findStripWithBay(selectedCS)){selectedCS=null;}
-      render();
+      if(activeScrollCount>0){deferredRender=true;}else{render();}
     }catch(_){ }
   };
   ws.onclose=function(){
@@ -1077,6 +1079,7 @@ function bindEvents(){
     el.addEventListener('pointerdown',function(e){
       if(e.pointerType!=='touch'){return;}
       if(el._fling){cancelAnimationFrame(el._fling);el._fling=null;}
+      activeScrollCount++;
       el.setPointerCapture(e.pointerId);
       el._touchScrolled=false;
       el._scrollData={id:e.pointerId,lastY:e.clientY,pendingDy:0,raf:null,samples:[],tracking:true,totalMove:0};
@@ -1114,8 +1117,12 @@ function bindEvents(){
         if(totalDt>0){vy=totalDy/totalDt;}
       }
       el._scrollData=null;
+      activeScrollCount=Math.max(0,activeScrollCount-1);
       if(el._touchScrolled){setTimeout(function(){el._touchScrolled=false;},300);}
-      if(Math.abs(vy)<0.15){return;}
+      if(Math.abs(vy)<0.15){
+        if(activeScrollCount===0&&deferredRender){deferredRender=false;render();}
+        return;
+      }
       var velocity=vy*1000;
       var friction=0.95;
       var lastT=performance.now();
@@ -1123,7 +1130,7 @@ function bindEvents(){
         var dt=(t-lastT)/16.667;
         lastT=t;
         velocity*=Math.pow(friction,dt);
-        if(Math.abs(velocity)<10){el._fling=null;return;}
+        if(Math.abs(velocity)<10){el._fling=null;if(activeScrollCount===0&&deferredRender){deferredRender=false;render();}return;}
         el.scrollTop+=velocity*(dt*16.667/1000);
         el._fling=requestAnimationFrame(flingStep);
       }
@@ -1134,6 +1141,8 @@ function bindEvents(){
       if(sd&&e.pointerId===sd.id){
         if(sd.raf){cancelAnimationFrame(sd.raf);}
         el._scrollData=null;
+        activeScrollCount=Math.max(0,activeScrollCount-1);
+        if(activeScrollCount===0&&deferredRender){deferredRender=false;render();}
       }
     });
   });
